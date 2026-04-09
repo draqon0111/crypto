@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoX - Wallet</title>
+    <link rel="stylesheet" href="stylee.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+
+    <div class="container">
+
+        <!-- Header -->
+        <header>
+            <h1>💼 My Wallet</h1>
+            <p>Manage your crypto assets and track your transactions.</p>
+        </header>
+
+        <!-- Wallet Summary Boxes -->
+        <section class="wallet-summary">
+            <div class="wallet-actions">
+    <button onclick="refreshWallet()" class="refresh-btn">
+        🔄 Refresh Wallet
+    </button>
+</div>
+            <div class="summary-card">
+    <h3>💰 Total Balance</h3>
+    <h2 id="totalBalance">$0</h2>
+    <p class="neutral" id="lastUpdated">Updated just now</p>
+</div>
+
+<div class="summary-card">
+    <h3>📈 Total Profit</h3>
+    <h2 id="totalProfit">$0</h2>
+    <p id="profitPercent" class="positive">+0% overall</p>
+</div>
+
+<div class="summary-card">
+    <h3>⏳ Pending Orders</h3>
+    <h2 id="pendingOrders">0 Orders</h2>
+    <p class="warning-text">Awaiting execution</p>
+</div>
+
+<div class="summary-card">
+    <h3>🔄 Total Transactions</h3>
+    <h2 id="totalTransactions">0</h2>
+    <p class="neutral">Last 30 days</p>
+</div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+    <button class="btn primary" onclick="deposit()">Deposit</button>
+    <button class="btn success" onclick="withdraw()">Withdraw</button>
+    <button class="btn warning" onclick="transfer()">Transfer</button>
+    <button class="btn danger" onclick="sell()">Sell</button>
+</div>
+
+        <!-- My Assets -->
+        <section class="assets">
+
+    <h2>🪙 My Assets</h2>
+
+    <div class="asset-card">
+        <div>
+            <h3>Bitcoin (BTC)</h3>
+            <p id="btcAmount">0.85 BTC</p>
+        </div>
+        <div>
+            <h3 id="btcValue">$36,700</h3>
+            <p id="btcChange" class="positive">+2.4%</p>
+        </div>
+    </div>
+
+    <div class="asset-card">
+        <div>
+            <h3>Ethereum (ETH)</h3>
+            <p id="ethAmount">5.2 ETH</p>
+        </div>
+        <div>
+            <h3 id="ethValue">$11,870</h3>
+            <p id="ethChange" class="positive">+1.8%</p>
+        </div>
+    </div>
+
+    <div class="asset-card">
+        <div>
+            <h3>Solana (SOL)</h3>
+            <p id="solAmount">120 SOL</p>
+        </div>
+        <div>
+            <h3 id="solValue">$9,850</h3>
+            <p id="solChange" class="positive">+3.7%</p>
+        </div>
+    </div>
+
+</section>
+
+        </section>
+
+    </div>
+
+    <script>
+       fetch("sidebar.html")
+       .then(res => res.text())
+       .then(data => {
+            document.getElementById("sidebar-container").innerHTML = data;
+
+    // Active Link Highlight
+    const currentPage = window.location.pathname.split("/").pop();
+    const links = document.querySelectorAll(".sidebar a");
+
+    links.forEach(link => {
+        if (link.getAttribute("href") === currentPage) {
+            link.classList.add("active");
+        }
+    });
+
+    // Login / Logout Toggle
+    const authLink = document.getElementById("authLink");
+    const isLoggedIn = localStorage.getItem("loggedIn");
+
+    if (isLoggedIn) {
+        authLink.innerHTML = "🚪 Logout";
+        authLink.href = "#";
+        authLink.onclick = function () {
+            localStorage.removeItem("loggedIn");
+            window.location.href = "login.html";
+        };
+    }
+});
+</script>
+<script>
+function refreshWallet() {
+    // Simulate refresh effect
+    const balances = document.querySelectorAll(".summary-card h2");
+    
+    balances.forEach(item => {
+        item.style.opacity = "0.5";
+    });
+
+    setTimeout(() => {
+        balances.forEach(item => {
+            item.style.opacity = "1";
+        });
+        alert("Wallet Updated Successfully ✅");
+    }, 800);
+}
+</script>
+<script>
+let balance = 58420; // starting balance
+
+function updateBalance() {
+    document.getElementById("totalBalance").innerText = 
+        "$" + balance.toLocaleString() + ".00";
+}
+
+function deposit() {
+    let amount = parseFloat(prompt("Enter deposit amount:"));
+    if (!isNaN(amount) && amount > 0) {
+        balance += amount;
+        updateBalance();
+        alert("Deposit Successful ✅");
+    } else {
+        alert("Invalid Amount ❌");
+    }
+}
+
+function withdraw() {
+    let amount = parseFloat(prompt("Enter withdraw amount:"));
+    if (!isNaN(amount) && amount > 0 && amount <= balance) {
+        balance -= amount;
+        updateBalance();
+        alert("Withdrawal Successful ✅");
+    } else {
+        alert("Invalid or Insufficient Balance ❌");
+    }
+}
+
+function transfer() {
+    let amount = parseFloat(prompt("Enter transfer amount:"));
+    if (!isNaN(amount) && amount > 0 && amount <= balance) {
+        balance -= amount;
+        updateBalance();
+        alert("Transfer Successful ✅");
+    } else {
+        alert("Invalid or Insufficient Balance ❌");
+    }
+}
+
+function sell() {
+    let amount = parseFloat(prompt("Enter sell amount:"));
+    if (!isNaN(amount) && amount > 0) {
+        balance += amount;
+        updateBalance();
+        alert("Sell Order Completed ✅");
+    } else {
+        alert("Invalid Amount ❌");
+    }
+}
+</script>
+<script>
+let assets = {
+    btc: { amount: 0.85, price: 43000 },
+    eth: { amount: 5.2, price: 2280 },
+    sol: { amount: 120, price: 82 }
+};
+
+function updateAssets() {
+
+    // BTC
+    let btcValue = assets.btc.amount * assets.btc.price;
+    document.getElementById("btcValue").innerText =
+        "$" + btcValue.toLocaleString();
+
+    // ETH
+    let ethValue = assets.eth.amount * assets.eth.price;
+    document.getElementById("ethValue").innerText =
+        "$" + ethValue.toLocaleString();
+
+    // SOL
+    let solValue = assets.sol.amount * assets.sol.price;
+    document.getElementById("solValue").innerText =
+        "$" + solValue.toLocaleString();
+}
+
+function simulateMarket() {
+
+    // Random price movement
+    for (let coin in assets) {
+        let change = (Math.random() * 4 - 2); // -2% to +2%
+        assets[coin].price *= (1 + change / 100);
+
+        let changeElement = document.getElementById(coin + "Change");
+
+        if (change >= 0) {
+            changeElement.className = "positive";
+            changeElement.innerText = "+" + change.toFixed(2) + "%";
+        } else {
+            changeElement.className = "negative";
+            changeElement.innerText = change.toFixed(2) + "%";
+        }
+    }
+
+    updateAssets();
+}
+
+// Run every 5 seconds
+setInterval(simulateMarket, 5000);
+
+// Initial load
+updateAssets();
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const assets = {
+        btc: { amount: 0.85, price: 43000 },
+        eth: { amount: 5.2, price: 2280 },
+        sol: { amount: 120, price: 82 }
+    };
+
+    let baseInvestment = 50000;
+
+    function updateSummary() {
+
+        let total = 0;
+
+        for (let coin in assets) {
+            total += assets[coin].amount * assets[coin].price;
+        }
+
+        // Update Balance
+        document.getElementById("totalBalance").innerText =
+            "$" + total.toLocaleString();
+
+        // Calculate Profit
+        let profit = total - baseInvestment;
+        let percent = (profit / baseInvestment) * 100;
+
+        document.getElementById("totalProfit").innerText =
+            "$" + profit.toLocaleString();
+
+        let percentElement = document.getElementById("profitPercent");
+
+        if (percent >= 0) {
+            percentElement.className = "positive";
+            percentElement.innerText = "+" + percent.toFixed(2) + "% overall";
+        } else {
+            percentElement.className = "negative";
+            percentElement.innerText = percent.toFixed(2) + "% overall";
+        }
+    }
+
+    updateSummary();
+});
+</script>
+</body>
+</html>

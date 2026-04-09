@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CryptoX - Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylee.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+<div id="sidebar-container"></div>
+    <!-- Main Content -->
+    <main class="main">
+
+        <!-- Header -->
+        <header class="top-header">
+            <div>
+                <h1>CRYPTOXX 📉</h1>
+                <p>Welcome back! Here's your crypto overview.</p>
+            </div>
+
+            <div class="header-actions">
+                <input type="text" placeholder="Search...">
+                <button onclick="showAlert()">🔔</button>
+            </div>
+        </header>
+
+        <!-- Portfolio Summary -->
+        <section class="section">
+            <h2>📈 Portfolio Summary</h2>
+            <div class="cards">
+
+                <div class="card">
+                    <h3>Total Balance</h3>
+                    <h2>$24,580</h2>
+                    <p class="positive">+5.2% this week</p>
+                </div>
+
+                <div class="card">
+                    <h3>Bitcoin (BTC)</h3>
+                    <h2>0.85 BTC</h2>
+                    <p>$42,300</p>
+                </div>
+
+                <div class="card">
+                    <h3>Ethereum (ETH)</h3>
+                    <h2>5.4 ETH</h2>
+                    <p>$12,150</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Transactions -->
+        <section class="section">
+            <h2>🔄 Recent Transactions</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Coin</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>16 Feb 2026</td>
+                            <td>Bitcoin</td>
+                            <td class="positive">+0.2 BTC</td>
+                            <td class="completed">Completed</td>
+                        </tr>
+                        <tr>
+                            <td>14 Feb 2026</td>
+                            <td>Ethereum</td>
+                            <td class="negative">-1.0 ETH</td>
+                            <td class="pending">Pending</td>
+                        </tr>
+                        <tr>
+                            <td>10 Feb 2026</td>
+                            <td>Solana</td>
+                            <td class="positive">+12 SOL</td>
+                            <td class="completed">Completed</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- News -->
+        <section class="section">
+            <h2>📰 Crypto News</h2>
+            <ul class="news-list">
+                <li>🚀 Bitcoin crosses new resistance level as market sentiment improves.</li>
+                <li>💎 Ethereum upgrade expected to reduce gas fees.</li>
+                <li>📈 Altcoins showing bullish momentum this week.</li>
+            </ul>
+        </section>
+
+    </main>
+
+   <script>
+fetch("sidebar.html")
+.then(res => res.text())
+.then(data => {
+    document.getElementById("sidebar-container").innerHTML = data;
+
+    // Active Link Highlight
+    const currentPage = window.location.pathname.split("/").pop();
+    const links = document.querySelectorAll(".sidebar a");
+
+    links.forEach(link => {
+        if (link.getAttribute("href") === currentPage) {
+            link.classList.add("active");
+        }
+    });
+
+    // Login / Logout Toggle
+    const authLink = document.getElementById("authLink");
+    const isLoggedIn = localStorage.getItem("loggedIn");
+
+    if (isLoggedIn) {
+        authLink.innerHTML = "🚪 Logout";
+        authLink.href = "#";
+        authLink.onclick = function () {
+            localStorage.removeItem("loggedIn");
+            window.location.href = "login.html";
+        };
+    }
+});
+</script>
+
+</body>
+</html>

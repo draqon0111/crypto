@@ -1,0 +1,404 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoX - Market</title>
+    <link rel="stylesheet" href="stylee.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+   <div id="sidebar-container"></div>
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <header>
+            <h1>📊 Market Overview</h1>
+            <p>Live cryptocurrency prices and global market trends.</p>
+        </header>
+
+        <!-- Market Stats -->
+        <section class="market-stats">
+
+    <div class="stat-card">
+        <h3>💹 Total Market Cap</h3>
+        <h2 id="marketCap">$0</h2>
+        <p id="marketCapChange" class="positive">+0%</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>📈 24h Trading Volume</h3>
+        <h2 id="volume">$0</h2>
+        <p id="volumeChange" class="positive">+0%</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>🟡 BTC Dominance</h3>
+        <h2 id="btcDom">0%</h2>
+        <p id="btcDomChange" class="positive">+0%</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>🪙 Active Cryptocurrencies</h3>
+        <h2 id="activeCoins">0</h2>
+        <p id="activeCoinsChange" class="positive">+0%</p>
+    </div>
+
+</section>
+      
+
+        <!-- Search -->
+       <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search cryptocurrency...">
+    <button onclick="searchCrypto()">Search</button>
+</div>
+
+<div id="searchResults"></div>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+    <button class="btn primary" onclick="deposit()">Deposit</button>
+    <button class="btn success" onclick="withdraw()">Withdraw</button>
+    <button class="btn warning" onclick="transfer()">Transfer</button>
+    <button class="btn danger" onclick="sell()">Sell</button>
+</div>
+
+        <!-- Wallet Summary -->
+        <div class="wallet-summary">
+
+<h2 id="totalBalance">$58,420.00</h2>
+<h2 id="totalProfit">$4,320.00</h2>
+<h2 id="pendingOrders">3 Orders</h2>
+<h2 id="totalTransactions">156</h2>
+
+<button onclick="updateStats()">💰</button>
+</div>
+
+        <!-- Crypto List -->
+        <section class="crypto-list">
+
+    <div class="crypto-card">
+        <h3>📈 Bitcoin (BTC)</h3>
+        <h2 id="btcPrice">$0</h2>
+        <p id="btcChange" class="positive">+0%</p>
+    </div>
+
+    <div class="crypto-card">
+        <h3>📈 Ethereum (ETH)</h3>
+        <h2 id="ethPrice">$0</h2>
+        <p id="ethChange" class="positive">+0%</p>
+    </div>
+
+    <div class="crypto-card">
+        <h3>📈 Tether (USDT)</h3>
+        <h2 id="usdtPrice">$0</h2>
+        <p id="usdtChange" class="neutral">0%</p>
+    </div>
+
+    <div class="crypto-card">
+        <h3>📈 BNB</h3>
+        <h2 id="bnbPrice">$0</h2>
+        <p id="bnbChange" class="positive">+0%</p>
+    </div>
+
+    <div class="crypto-card">
+        <h3>📈 Solana (SOL)</h3>
+        <h2 id="solPrice">$0</h2>
+        <p id="solChange" class="positive">+0%</p>
+    </div>
+
+</section>
+
+    </div>
+<script>
+fetch("sidebar.html")
+.then(res => res.text())
+.then(data => {
+    document.getElementById("sidebar-container").innerHTML = data;
+
+    // Active Link Highlight
+    const currentPage = window.location.pathname.split("/").pop();
+    const links = document.querySelectorAll(".sidebar a");
+
+    links.forEach(link => {
+        if (link.getAttribute("href") === currentPage) {
+            link.classList.add("active");
+        }
+    });
+
+    // Login / Logout Toggle
+    const authLink = document.getElementById("authLink");
+    const isLoggedIn = localStorage.getItem("loggedIn");
+
+    if (isLoggedIn) {
+        authLink.innerHTML = "🚪 Logout";
+        authLink.href = "#";
+        authLink.onclick = function () {
+            localStorage.removeItem("loggedIn");
+            window.location.href = "login.html";
+        };
+    }
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    let marketData = {
+        marketCap: 1.2,      // in Trillion
+        volume: 150,         // in Billion
+        btcDom: 45.2,        // %
+        activeCoins: 5000
+    };
+
+    function updateMarketStats() {
+
+        // Random % change (-3% to +3%)
+        function randomChange() {
+            return (Math.random() * 6 - 3);
+        }
+
+        function applyChange(idValue, idChange, value, unit = "") {
+            let change = randomChange();
+
+            let changeElement = document.getElementById(idChange);
+
+            if (change >= 0) {
+                changeElement.className = "positive";
+                changeElement.innerText = "+" + change.toFixed(2) + "% in last 24h";
+            } else {
+                changeElement.className = "negative";
+                changeElement.innerText = change.toFixed(2) + "% in last 24h";
+            }
+
+            document.getElementById(idValue).innerText = value + unit;
+        }
+
+        applyChange("marketCap", "marketCapChange",
+            "$" + marketData.marketCap.toFixed(2) + " Trillion");
+
+        applyChange("volume", "volumeChange",
+            "$" + marketData.volume.toFixed(0) + " Billion");
+
+        applyChange("btcDom", "btcDomChange",
+            marketData.btcDom.toFixed(2) + "%");
+
+        applyChange("activeCoins", "activeCoinsChange",
+            marketData.activeCoins.toLocaleString());
+
+    }
+
+    updateMarketStats();
+    setInterval(updateMarketStats, 5000);
+
+});
+</script>
+<script>
+const cryptoList = [
+    "Bitcoin (BTC)",
+    "Ethereum (ETH)",
+    "Solana (SOL)",
+    "Binance Coin (BNB)",
+    "Cardano (ADA)",
+    "XRP (XRP)",
+    "Dogecoin (DOGE)",
+    "Polkadot (DOT)",
+    "Litecoin (LTC)",
+    "Avalanche (AVAX)"
+];
+
+function searchCrypto() {
+    let input = document.getElementById("searchInput").value.toLowerCase();
+    let resultsDiv = document.getElementById("searchResults");
+
+    resultsDiv.innerHTML = "";
+
+    if (input === "") {
+        resultsDiv.innerHTML = "<p style='color:red;'>Please enter a coin name.</p>";
+        return;
+    }
+
+    let filtered = cryptoList.filter(coin =>
+        coin.toLowerCase().includes(input)
+    );
+
+    if (filtered.length > 0) {
+        filtered.forEach(coin => {
+            let p = document.createElement("p");
+            p.innerText = coin;
+            p.classList.add("result-item");
+            resultsDiv.appendChild(p);
+        });
+    } else {
+        resultsDiv.innerHTML = "<p style='color:red;'>No cryptocurrency found.</p>";
+    }
+}
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    let balance = 58420;
+    let baseInvestment = 50000;
+    let transactions = 156;
+    let pendingOrders = 3;
+
+    function updateUI() {
+
+        // Update Balance
+        document.getElementById("totalBalance").innerText =
+            "$" + balance.toLocaleString();
+
+        // Update Profit
+        let profit = balance - baseInvestment;
+        let percent = (profit / baseInvestment) * 100;
+
+        document.getElementById("totalProfit").innerText =
+            "$" + profit.toLocaleString();
+
+        // Update Pending Orders
+        document.getElementById("pendingOrders").innerText =
+            pendingOrders + " Orders";
+
+        // Update Transactions
+        document.getElementById("totalTransactions").innerText =
+            transactions;
+    }
+
+    // Deposit
+    window.deposit = function() {
+        let amount = parseFloat(prompt("Enter deposit amount:"));
+        if (!isNaN(amount) && amount > 0) {
+            balance += amount;
+            transactions++;
+            alert("Deposit Successful ✅");
+            updateUI();
+        } else {
+            alert("Invalid amount ❌");
+        }
+    }
+
+    // Withdraw
+    window.withdraw = function() {
+        let amount = parseFloat(prompt("Enter withdraw amount:"));
+        if (!isNaN(amount) && amount > 0 && amount <= balance) {
+            balance -= amount;
+            transactions++;
+            alert("Withdrawal Successful ✅");
+            updateUI();
+        } else {
+            alert("Invalid or insufficient balance ❌");
+        }
+    }
+
+    // Transfer
+    window.transfer = function() {
+        let amount = parseFloat(prompt("Enter transfer amount:"));
+        if (!isNaN(amount) && amount > 0 && amount <= balance) {
+            balance -= amount;
+            transactions++;
+            pendingOrders++;
+            alert("Transfer Initiated ✅");
+            updateUI();
+        } else {
+            alert("Invalid or insufficient balance ❌");
+        }
+    }
+
+    // Sell
+    window.sell = function() {
+        let amount = parseFloat(prompt("Enter sell amount:"));
+        if (!isNaN(amount) && amount > 0) {
+            balance += amount;
+            transactions++;
+            alert("Sell Order Completed ✅");
+            updateUI();
+        } else {
+            alert("Invalid amount ❌");
+        }
+    }
+
+    updateUI();
+});
+</script>
+<script>
+let balance = 58420;
+let profit = 4320;
+let orders = 3;
+let transactions = 156;
+
+function updateStats() {
+
+    // Change values randomly
+    balance += Math.floor(Math.random() * 1000);
+    profit += Math.floor(Math.random() * 300);
+    orders = Math.floor(Math.random() * 6);
+    transactions += Math.floor(Math.random() * 5);
+
+    // Update UI
+    document.getElementById("totalBalance").innerText =
+        "$" + balance.toLocaleString();
+
+    document.getElementById("totalProfit").innerText =
+        "$" + profit.toLocaleString();
+
+    document.getElementById("pendingOrders").innerText =
+        orders + " Orders";
+
+    document.getElementById("totalTransactions").innerText =
+        transactions;
+}
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    let cryptoData = {
+        btc: 43256,
+        eth: 2284,
+        usdt: 1.00,
+        bnb: 310,
+        sol: 102
+    };
+
+    function randomChange() {
+        return (Math.random() * 6 - 3); // -3% to +3%
+    }
+
+    function updateCrypto() {
+
+        for (let coin in cryptoData) {
+
+            let changePercent = randomChange();
+            cryptoData[coin] *= (1 + changePercent / 100);
+
+            // Update price
+            document.getElementById(coin + "Price").innerText =
+                "$" + cryptoData[coin].toFixed(2);
+
+            // Update % change
+            let changeElement = document.getElementById(coin + "Change");
+
+            if (changePercent > 0) {
+                changeElement.className = "positive";
+                changeElement.innerText = "+" + changePercent.toFixed(2) + "%";
+            } 
+            else if (changePercent < 0) {
+                changeElement.className = "negative";
+                changeElement.innerText = changePercent.toFixed(2) + "%";
+            } 
+            else {
+                changeElement.className = "neutral";
+                changeElement.innerText = "0.00%";
+            }
+        }
+    }
+
+    updateCrypto();
+    setInterval(updateCrypto, 4000);
+
+});
+</script>
+</body>
+</html>

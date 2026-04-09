@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CryptoX - Settings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylee.css">
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div id="sidebar-container"></div>
+
+<!-- Main Content -->
+<div class="main">
+
+    <h1>⚙ Account Settings</h1>
+    <p>Manage your profile, security, and preferences.</p>
+
+    <div id="message" class="message"></div>
+
+    <!-- Profile Settings -->
+    <div class="settings-card">
+        <h3>👤 Profile Information</h3>
+
+        <form id="profileForm">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="fullname" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="email" required>
+            </div>
+
+            <button type="submit" class="save-btn">
+                Save Changes
+            </button>
+        </form>
+    </div>
+
+    <!-- Security Settings -->
+    <div class="settings-card">
+        <h3>🔐 Security Settings</h3>
+
+        <form id="passwordForm">
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="new_password" required>
+            </div>
+
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="confirm_password" required>
+            </div>
+
+            <button type="submit" class="save-btn">
+                Update Password
+            </button>
+        </form>
+    </div>
+
+</div>
+
+<script>
+// ===============================
+// LOAD SAVED DATA
+// ===============================
+window.onload = function () {
+
+    // Check login
+    if (!localStorage.getItem("loggedIn")) {
+        window.location.href = "login.html";
+    }
+
+    // Load profile
+    const savedName = localStorage.getItem("fullname");
+    const savedEmail = localStorage.getItem("email");
+
+    if (savedName) document.getElementById("fullname").value = savedName;
+    if (savedEmail) document.getElementById("email").value = savedEmail;
+};
+
+
+// ===============================
+// UPDATE PROFILE
+// ===============================
+document.getElementById("profileForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const fullname = document.getElementById("fullname").value;
+    const email = document.getElementById("email").value;
+
+    localStorage.setItem("fullname", fullname);
+    localStorage.setItem("email", email);
+
+    showMessage("✅ Profile updated successfully!");
+});
+
+
+// ===============================
+// UPDATE PASSWORD
+// ===============================
+document.getElementById("passwordForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const newPassword = document.getElementById("new_password").value;
+    const confirmPassword = document.getElementById("confirm_password").value;
+
+    if (newPassword !== confirmPassword) {
+        showMessage("❌ Passwords do not match!", true);
+        return;
+    }
+
+    localStorage.setItem("password", newPassword);
+
+    showMessage("✅ Password updated successfully!");
+
+    document.getElementById("passwordForm").reset();
+});
+
+
+// ===============================
+// MESSAGE FUNCTION
+// ===============================
+function showMessage(msg, isError = false) {
+    const messageDiv = document.getElementById("message");
+    messageDiv.innerHTML = msg;
+    messageDiv.style.color = isError ? "red" : "lime";
+
+    setTimeout(() => {
+        messageDiv.innerHTML = "";
+    }, 3000);
+}
+
+
+// ===============================
+// LOAD SIDEBAR
+// ===============================
+fetch("sidebar.html")
+.then(res => res.text())
+.then(data => {
+    document.getElementById("sidebar-container").innerHTML = data;
+
+    const currentPage = window.location.pathname.split("/").pop();
+    const links = document.querySelectorAll(".sidebar a");
+
+    links.forEach(link => {
+        if (link.getAttribute("href") === currentPage) {
+            link.classList.add("active");
+        }
+    });
+
+    const authLink = document.getElementById("authLink");
+    const isLoggedIn = localStorage.getItem("loggedIn");
+
+    if (isLoggedIn) {
+        authLink.innerHTML = "🚪 Logout";
+        authLink.href = "#";
+        authLink.onclick = function () {
+            localStorage.removeItem("loggedIn");
+            window.location.href = "login.html";
+        };
+    }
+});
+</script>
+
+</body>
+</html>
